@@ -68,6 +68,8 @@ or, if you use Bundler
       end
     end
 
+Note that there is no need to declare the `User` model anywhere- `Databasedotcom::Rails::Controller` recognizes it as a known Sobject type from your database.com instance, and materializes it automatically.
+
 # License
 
 databasedotcom-rails is released under the MIT License
