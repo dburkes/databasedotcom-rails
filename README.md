@@ -10,7 +10,20 @@ or, if you use Bundler
   
 # Usage
 
-Include the `Databasedotcom::Rails::Controller` module into your RESTful controller, and be sure to call `YourModel.coerce_params` before you pass parameters submitted from an HTML form to your materialized Sobject.
+* Include `Databasedotcom::Rails::Controller` into your RESTful controller
+
+* Create a YAML file at RAILS_ROOT/config/databasedotcom.yml file, like so 
+
+        ---
+        client_id: put-your-client-id-here
+        client_secret: put-your-client-secret-here
+        username: put-your-username-here
+        password: put-your-password-here
+        debugging: true
+    
+* Call `YourModel.coerce_params` before you pass parameters submitted from an HTML form to your materialized Sobject
+
+# Example
 
     class UsersController < ApplicationController
       include Databasedotcom::Rails::Controller
