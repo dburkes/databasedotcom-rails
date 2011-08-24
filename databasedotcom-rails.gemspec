@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{Convenience classes to make using the databasedotcom gem with Rails apps even easier}
   s.description = %q{Convenience classes to make using the databasedotcom gem with Rails apps even easier}
 
-  s.files         = Dir['README.rdoc', 'MIT-LICENSE', 'lib/**/*']
+  s.files         = Dir['README.md', 'MIT-LICENSE', 'lib/**/*']
   s.require_paths = ["lib"]
   s.add_dependency('databasedotcom')
   s.add_development_dependency('rspec', '2.6.0')
