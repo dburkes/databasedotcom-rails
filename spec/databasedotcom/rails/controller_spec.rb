@@ -14,24 +14,53 @@ describe Databasedotcom::Rails::Controller do
   end
   
   describe ".dbdc_client" do
-    before(:each) do
-      config_hash = { "client_id" => "client_id", "client_secret" => "client_secret",  "username" => "foo", "password" => "bar" }
-      YAML.should_receive(:load_file).and_return(config_hash)
-    end
-    
     after(:each) do
       TestController.dbdc_client = nil
     end
-    
-    it "constructs and authenticates a Databasedotcom::Client" do
-      Databasedotcom::Client.any_instance.should_receive(:authenticate).with(:username => "foo", :password => "bar")
-      TestController.dbdc_client
+
+    describe "if the config has an entry that matches Rails.env" do
+#      [:production, :development, :test].each do |env|
+        before (:each) do
+          config_hash = { :production => { "client_id" => "production_client_id", "client_secret" => "production_client_secret",  "username" => "production_foo", "password" => "production_bar" },
+                          :development => { "client_id" => "development_client_id", "client_secret" => "development_client_secret",  "username" => "development_foo", "password" => "development_bar" },
+                          :test => { "client_id" => "test_client_id", "client_secret" => "test_client_secret",  "username" => "test_foo", "password" => "test_bar" }
+                        }
+          YAML.should_receive(:load_file).and_return(config_hash)
+          ::Rails.stub!(:env).and_return(:production)
+        end
+        it "should use the corresponding entry" do
+          Databasedotcom::Client.any_instance.should_receive(:authenticate).with(:username => "production_foo", :password => "production_bar")
+          TestController.dbdc_client
+         end
+#      end
     end
-    
-    it "is memoized" do
-      Databasedotcom::Client.any_instance.should_receive(:authenticate).exactly(1).times.with(:username => "foo", :password => "bar")
-      TestController.dbdc_client
-      TestController.dbdc_client
+    describe "if the config does not have an entry that matches Rails.env" do
+      it "should use the top level config" do
+        conf_hash = { "client_id" => "client_id", "client_secret" => "client_secret",  "username" => "foo", "password" => "bar" }
+        ::Rails.stub!(:env).and_return(:production)
+        YAML.should_receive(:load_file).and_return(conf_hash)
+        Databasedotcom::Client.any_instance.should_receive(:authenticate).with(:username => "foo", :password => "bar")
+        TestController.dbdc_client
+      end
+    end
+
+    describe "foo" do
+      before(:each) do
+        config_hash = { "client_id" => "client_id", "client_secret" => "client_secret",  "username" => "foo", "password" => "bar" }
+        YAML.should_receive(:load_file).and_return(config_hash)
+        ::Rails.stub!(:env).and_return(:test)
+      end
+
+      it "constructs and authenticates a Databasedotcom::Client" do
+        Databasedotcom::Client.any_instance.should_receive(:authenticate).with(:username => "foo", :password => "bar")
+        TestController.dbdc_client
+      end
+
+      it "is memoized" do
+        Databasedotcom::Client.any_instance.should_receive(:authenticate).exactly(1).times.with(:username => "foo", :password => "bar")
+        TestController.dbdc_client
+        TestController.dbdc_client
+      end
     end
   end
   
