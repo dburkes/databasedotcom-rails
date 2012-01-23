@@ -20,7 +20,16 @@ or, if you use Bundler
         username: put-your-username-here
         password: put-your-password-here
         debugging: true
-    
+
+  Alternatively, include a environment specific string:
+        development:
+            client_id: ...
+        test:
+            client_id: ...
+        production:
+            client_id: ...
+
+
 * Call `YourModel.coerce_params` before you pass parameters submitted from an HTML form to your materialized Sobject
 
 # Example
