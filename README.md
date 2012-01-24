@@ -21,7 +21,7 @@ or, if you use Bundler
         password: put-your-password-here
         debugging: true
 
-  Alternatively, include a environment specific string:
+  Alternatively, include environment-specific settings:
         development:
             client_id: ...
         test:
