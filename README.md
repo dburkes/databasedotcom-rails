@@ -1,6 +1,6 @@
 # databasedotcom-rails
 
-Convenience classes to make using the databasedotcom gem with Rails apps even easier
+Convenience classes to make using the [databasedotcom](https://github.com/heroku/databasedotcom) gem with Rails apps even easier
 
 #Installation
     gem install databasedotcom-rails
