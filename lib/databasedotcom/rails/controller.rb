@@ -28,8 +28,8 @@ module Databasedotcom
         end
 
         def const_missing(sym)
-          if sobject_types.include?(sym.to_s)
-            dbdc_client.materialize(sym.to_s)
+          if sobject_types.map {|x| x.downcase}.include?(sym.to_s.downcase)
+            dbdc_client.materialize(sym.to_s) # No Downcase needed. Materialize is not case sensitive.
           else
             super
           end
