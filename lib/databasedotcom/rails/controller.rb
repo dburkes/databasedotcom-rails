@@ -4,7 +4,8 @@ module Databasedotcom
       module ClassMethods
         def dbdc_client
           unless @dbdc_client
-            config = YAML.load_file(File.join(::Rails.root, 'config', 'databasedotcom.yml'))
+            config_path = File.join(::Rails.root, 'config', 'databasedotcom.yml')
+            config = YAML.load(ERB.new(File.read(config_path)).result)
             config = config.has_key?(::Rails.env) ? config[::Rails.env] : config
             username = config["username"]
             password = config["password"]

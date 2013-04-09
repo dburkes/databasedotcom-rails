@@ -25,7 +25,8 @@ describe Databasedotcom::Rails::Controller do
                           :development => { "client_id" => "development_client_id", "client_secret" => "development_client_secret",  "username" => "development_foo", "password" => "development_bar" },
                           :test => { "client_id" => "test_client_id", "client_secret" => "test_client_secret",  "username" => "test_foo", "password" => "test_bar" }
                         }
-          YAML.should_receive(:load_file).and_return(config_hash)
+          YAML.should_receive(:load).and_return(config_hash)
+          File.stub(:read).and_return("")
           ::Rails.stub!(:env).and_return(:production)
         end
         it "should use the corresponding entry" do
@@ -38,7 +39,30 @@ describe Databasedotcom::Rails::Controller do
       it "should use the top level config" do
         conf_hash = { "client_id" => "client_id", "client_secret" => "client_secret",  "username" => "foo", "password" => "bar" }
         ::Rails.stub!(:env).and_return(:production)
-        YAML.should_receive(:load_file).and_return(conf_hash)
+        File.stub(:read).and_return("")
+        YAML.should_receive(:load).and_return(conf_hash)
+        Databasedotcom::Client.any_instance.should_receive(:authenticate).with(:username => "foo", :password => "bar")
+        TestController.dbdc_client
+      end
+    end
+    
+    describe "if the config has an erb tag" do
+      it "should be evaluated" do
+        conf_file_contents = %q{
+          client_id: client_foo
+          client_secret: secret_bar
+          username: <%= FAKE_ENV['DATABASEDOTCOM_USERNAME'] %>
+          password: <%= FAKE_ENV['DATABASEDOTCOM_PASSWORD'] %>
+        }
+        ::Rails.stub(:env).and_return(:test)
+        
+        FAKE_ENV = {}
+        
+        FAKE_ENV.stub(:[]).with("DATABASEDOTCOM_USERNAME").and_return('foo')
+        FAKE_ENV.stub(:[]).with("DATABASEDOTCOM_PASSWORD").and_return('bar')
+        
+        File.should_receive(:read).and_return(conf_file_contents)
+        
         Databasedotcom::Client.any_instance.should_receive(:authenticate).with(:username => "foo", :password => "bar")
         TestController.dbdc_client
       end
@@ -47,7 +71,8 @@ describe Databasedotcom::Rails::Controller do
     describe "foo" do
       before(:each) do
         config_hash = { "client_id" => "client_id", "client_secret" => "client_secret",  "username" => "foo", "password" => "bar" }
-        YAML.should_receive(:load_file).and_return(config_hash)
+        File.stub(:read).and_return("")
+        YAML.should_receive(:load).and_return(config_hash)
         ::Rails.stub!(:env).and_return(:test)
       end
 
